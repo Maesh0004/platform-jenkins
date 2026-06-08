@@ -1,0 +1,89 @@
+---
+- name: Install Jenkins with Docker
+  hosts: jenkins_controller
+  become: true
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Java
+      apt:
+        name: openjdk-21-jdk
+        state: present
+
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Install Docker Compose
+      apt:
+        name: docker-compose
+        state: present
+
+    - name: Start and enable Docker service
+      systemd:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Create Jenkins home directory
+      file:
+        path: /opt/jenkins_home
+        state: directory
+        owner: 1000
+        group: 1000
+        mode: '0755'
+
+    - name: Create Jenkins working directory
+      file:
+        path: /opt/jenkins
+        state: directory
+
+    - name: Copy docker-compose file
+      copy:
+        src: files/docker-compose.yml
+        dest: /opt/jenkins/docker-compose.yml
+        owner: root
+        group: root
+        mode: '0644'
+    
+    - name: Start Jenkins using Docker Compose
+      command: docker compose up -d
+      args:
+        chdir: /opt/jenkins
+    
+    - name: Check Jenkins responds
+      uri:
+        url: http://localhost:8080
+        return_content: false
+        status_code:
+          - 200
+          - 302
+          - 403
+      register: jenkins_status
+      retries: 10
+      delay: 10
+      until: jenkins_status.status in [200,302,403]
+
+    - name: Get Jenkins initial password
+      shell: docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
+      register: jenkins_password
+
+    - name: Display Jenkins password
+      debug:
+        msg: "{{ jenkins_password.stdout }}"
+
+
+    - name: Install Jenkins plugins
+      shell: >
+        docker exec jenkins
+        jenkins-plugin-cli
+        --plugins
+        "git workflow-aggregator pipeline-stage-view credentials-binding ssh-build-agent"
+
+    - name: Restart Jenkins
+      shell: docker restart jenkins
+      

@@ -1,0 +1,49 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+
+# Variables
+*.tfvars
+*.tfvars.json
+
+# Crash logs
+crash.log
+*.venv/*
+
+
+# Ignore virtual environment folders
+venv/
+.env/
+.venv/
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore IDE/project settings
+.vscode/
+.idea/
+
+# Ansible
+# Ignore Ansible retry files and temporary runtime dirs
+*.retry
+.vault_pass.txt
+.ansible/
+
+# Python packaging and caches
+pip-wheel-metadata/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+
+# Ignore real Ansible config and inventory (keep examples in repo)
+/ansible/inventory.ini
+/ansible/ansible.cfg
+
+# Local inventories
+ansible/inventory.ini

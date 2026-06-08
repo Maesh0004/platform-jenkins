@@ -1,0 +1,9 @@
+# Example Ansible inventory — safe to commit. Copy to `inventory.ini` and fill real values.
+
+[jenkins_controller]
+# Replace <CONTROLLER_HOST> and <ANSIBLE_USER> with your controller host and user.
+controller1 ansible_host=<CONTROLLER_HOST> ansible_user=<ANSIBLE_USER> ansible_ssh_pass=<SSH_PASSWORD_OR_REMOVE>
+
+[jenkins_agents]
+# Replace <AGENT_HOST> and <ANSIBLE_USER> with your agent host and user.
+agent01 ansible_host=<AGENT_HOST> ansible_user=<ANSIBLE_USER> ansible_ssh_private_key_file=~/.ssh/<KEYFILE.pem>
